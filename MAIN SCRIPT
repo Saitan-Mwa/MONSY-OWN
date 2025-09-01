@@ -24,7 +24,7 @@ UICorner.CornerRadius = UDim.new(0, 8)
 local Title = Instance.new("TextLabel", Frame)
 Title.Size = UDim2.new(1, 0, 0, 30)
 Title.Position = UDim2.new(0, 0, 0, 0)
-Title.Text = "LAST VERSION GOMA"
+Title.Text = "MONSY MAIN KEY"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.BackgroundTransparency = 1
 Title.Font = Enum.Font.GothamBold
@@ -58,7 +58,7 @@ local UICorner3 = Instance.new("UICorner", Submit)
 UICorner3.CornerRadius = UDim.new(0, 6)
 
 --// Key Logic
-local correctKey = "1337-MONSY"
+local correctKey = "MONSY?"
 
 
 
@@ -189,7 +189,7 @@ end)
 -- top banner text
 local topText = Instance.new("TextLabel")
 topText.BackgroundTransparency = 1
-topText.Text = "LAST VERSION MAIN SCRIPT"
+topText.Text = "MONSY MAIN CHEAT"
 topText.Font = Enum.Font.GothamBold
 topText.TextScaled = true
 topText.TextColor3 = YELLOW
@@ -384,7 +384,7 @@ topBar.BorderSizePixel = 0
 topBar.Parent = main
 
 local title = Instance.new("TextLabel")
-title.Text = "LAST VERSION MAIN SCRIPT GOMA - bye monsy uh"
+title.Text = "MONSY MAIN CHEAT OWN"
 title.Font = Enum.Font.GothamSemibold
 title.TextSize = 18
 title.TextColor3 = Color3.new(1, 1, 1)
