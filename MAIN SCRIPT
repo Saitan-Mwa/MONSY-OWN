@@ -3585,7 +3585,7 @@ end)
 end)
 
 --// 4 Buttons in Roleplay Script
-addMainMenuButton("Bagong Baryo City [3KTG]", function()
+addMainMenuButton("BAGONG BARYO CITY [3KTG]", function()
 	--// Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
