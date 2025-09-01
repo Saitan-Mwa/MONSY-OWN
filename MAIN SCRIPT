@@ -5963,6 +5963,145 @@ for i, name in ipairs({"SET SKY", "KICK ALL", "DEAD", "SOUND", "GOMA VIRUS"}) do
 end 
 end)
 
+--// 4 Buttons in Roleplay Script
+addMainMenuButton("TRACK ALL MUSCLE T TO OPEN / OFF [3KTG]", function()
+	--// Player Tracker + NameTag Display | Toggle with T key
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Wait for character and HRP
+repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+local trackingEnabled = false
+local lines = {}
+local nameTags = {}
+local renderConnection = nil
+
+-- Create ESP (line + name tag) for player
+local function createESP(player)
+	if player == LocalPlayer then return end
+	if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+
+	local origin = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+	local target = player.Character:FindFirstChild("HumanoidRootPart")
+
+	if not origin or not target then return end
+
+	-- Create white neon line
+	local line = Instance.new("Part")
+	line.Anchored = true
+	line.CanCollide = false
+	line.Color = Color3.new(1, 1, 1)
+	line.Material = Enum.Material.Neon
+	line.Transparency = 0
+	line.Size = Vector3.new(0.1, 0.1, 1)
+	line.Name = "ESP_Line_" .. player.Name
+	line.Parent = workspace
+	lines[player] = line
+
+	-- Create BillboardGui (name tag)
+	local head = player.Character:FindFirstChild("Head")
+	if head then
+		local billboard = Instance.new("BillboardGui")
+		billboard.Name = "NameTag"
+		billboard.Size = UDim2.new(0, 100, 0, 30) -- ⬅️ smaller
+		billboard.StudsOffset = Vector3.new(0, 2.2, 0) -- ⬅️ slightly lower
+		billboard.AlwaysOnTop = true
+		billboard.Adornee = head
+
+		local textLabel = Instance.new("TextLabel")
+		textLabel.Size = UDim2.new(1, 0, 1, 0)
+		textLabel.BackgroundTransparency = 1
+		textLabel.Text = player.DisplayName .. "\n(" .. player.Name .. ")"
+		textLabel.TextColor3 = Color3.new(1, 1, 1)
+		textLabel.TextStrokeTransparency = 0.4 -- optional: 0 is bold white stroke, 1 is none
+		textLabel.Font = Enum.Font.SourceSansBold
+		textLabel.TextScaled = true
+		textLabel.Parent = billboard
+
+		billboard.Parent = head
+		nameTags[player] = billboard
+	end
+end
+
+-- Update all lines
+local function updateESP()
+	for player, line in pairs(lines) do
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local origin = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+			local target = player.Character:FindFirstChild("HumanoidRootPart")
+			if origin and target then
+				local direction = target.Position - origin.Position
+				local distance = direction.Magnitude
+				line.Size = Vector3.new(0.1, 0.1, distance)
+				line.CFrame = CFrame.new(origin.Position, target.Position) * CFrame.new(0, 0, -distance / 2)
+			end
+		end
+	end
+end
+
+-- Clear all ESP
+local function clearESP()
+	for _, line in pairs(lines) do
+		if line then line:Destroy() end
+	end
+	for _, tag in pairs(nameTags) do
+		if tag then tag:Destroy() end
+	end
+	lines = {}
+	nameTags = {}
+end
+
+-- Toggle function
+local function toggleESP()
+	trackingEnabled = not trackingEnabled
+
+	if trackingEnabled then
+		warn("Tracking: ON")
+
+		-- Apply ESP to all current players
+		for _, player in ipairs(Players:GetPlayers()) do
+			createESP(player)
+		end
+
+		-- Update every frame
+		renderConnection = RunService.RenderStepped:Connect(function()
+			updateESP()
+		end)
+
+		-- Track new players
+		Players.PlayerAdded:Connect(function(player)
+			player.CharacterAdded:Connect(function()
+				wait(1)
+				createESP(player)
+			end)
+		end)
+	else
+		warn("Tracking: OFF")
+
+		-- Stop updates and clear
+		if renderConnection then
+			renderConnection:Disconnect()
+			renderConnection = nil
+		end
+		clearESP()
+	end
+end
+
+-- Keybind (T)
+UserInputService.InputBegan:Connect(function(input, isProcessed)
+	if isProcessed then return end
+	if input.KeyCode == Enum.KeyCode.T then
+		toggleESP()
+	end
+end)
+
+warn("Press [T] to toggle Player Tracker with Name Tags.")
+end)
+
 -- Particle Snow Effect inside main GUI
 local function createSnowParticle()
     local particle = Instance.new("ImageLabel")
