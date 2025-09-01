@@ -6126,7 +6126,7 @@ end
 end)
 
 --// 4 Buttons in Roleplay Script
-addMainMenuButton("TRACK ALL MUSCLE T TO OPEN / OFF [3KTG]", function()
+addMainMenuButton("TRACK ALL PRESS T OPEN / OFF [3KTG]", function()
 	--// Player Tracker + NameTag Display | Toggle with T key
 
 local Players = game:GetService("Players")
