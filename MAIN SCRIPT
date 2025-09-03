@@ -3636,7 +3636,7 @@ dropdown.TextSize = 14
 dropdown.Parent = frame
 Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 6)
 
-local gunList = {"Silenced Pistol", "Crowbar", "Drill", "Oxy", "Pen Gun", "Unknown", "Unknown"}
+local gunList = {"Silenced Pistol", "Crowbar", "Drill", "Oxy", "Pen Gun", "AK-47", "AmmoBox"}
 
 local selectedGun = nil
 
