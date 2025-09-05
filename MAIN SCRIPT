@@ -3788,7 +3788,7 @@ addMainMenuButton("Silenced Pistol [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Silenced Pistol", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Silenced Pistol", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3798,7 +3798,7 @@ addMainMenuButton("Heavy Vest [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Heavy Vest", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Heavy Vest", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3808,7 +3808,7 @@ addMainMenuButton("Glock-19 [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Glock-19", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Glock-19", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3818,7 +3818,7 @@ addMainMenuButton("Oxy [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Oxy", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Oxy", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3828,7 +3828,7 @@ addMainMenuButton("Vector [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Vector", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Vector", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3838,7 +3838,7 @@ addMainMenuButton("Tail [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Tail", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("Tail", -100000)
 end)
 
 --// 8 Buttons in Main Menu
@@ -3848,7 +3848,7 @@ addMainMenuButton("AmmoBox [3KTG]", function()
     [2] = -1000000
 }
 
-game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("AmmoBox", -100000)
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer("AmmoBox", -100000)
 end)
 
 --// Function to Add Buttons to Main Menu
