@@ -58,7 +58,7 @@ local UICorner3 = Instance.new("UICorner", Submit)
 UICorner3.CornerRadius = UDim.new(0, 6)
 
 --// Key Logic
-local correctKey = "KUPAL"
+local correctKey = "TRENDING"
 
 
 
