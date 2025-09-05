@@ -58,7 +58,7 @@ local UICorner3 = Instance.new("UICorner", Submit)
 UICorner3.CornerRadius = UDim.new(0, 6)
 
 --// Key Logic
-local correctKey = "GRAH"
+local correctKey = "KUPAL"
 
 
 
@@ -420,8 +420,9 @@ local tabNames = {
 	"ALADIA", 
 	"TROLL", 
 	"FANTASMA", 
-        "VERSION 6",
-	"LAST VERSION" 
+    "VERSION 6",
+	"LAST VERSION",
+	"DOMINION TELEPORT" 
 }
 local tabPanels = {}
 local currentTab = nil
@@ -6262,6 +6263,573 @@ UserInputService.InputBegan:Connect(function(input, isProcessed)
 end)
 
 warn("Press [T] to toggle Player Tracker with Name Tags.")
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("AUTO FARM BOX [3KTG]", function()
+	local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local DeliveryJob = workspace:WaitForChild("DeliveryJob"):WaitForChild("BoxPickingJob")
+local pickupPrompt = DeliveryJob:WaitForChild("PickupBox"):WaitForChild("PickupPrompt")
+local dropPrompt = DeliveryJob:WaitForChild("Job"):WaitForChild("Part"):WaitForChild("ProximityPrompt")
+
+-- GUI Creation
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 200, 0, 90)
+MainFrame.Position = UDim2.new(0.5, -100, 0.75, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICornerFrame = Instance.new("UICorner")
+UICornerFrame.CornerRadius = UDim.new(0, 8)
+UICornerFrame.Parent = MainFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, 0, 0, 30)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 18
+TitleLabel.Text = "AUTO FARM BOX"
+TitleLabel.Parent = MainFrame
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(1, -20, 0, 40)
+ToggleButton.Position = UDim2.new(0, 10, 0, 40)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 20
+ToggleButton.Text = "Auto Farm : OFF"
+ToggleButton.Parent = MainFrame
+ToggleButton.Active = true
+
+local UICornerButton = Instance.new("UICorner")
+UICornerButton.CornerRadius = UDim.new(0, 8)
+UICornerButton.Parent = ToggleButton
+
+-- Script Logic
+local running = false
+
+-- Instant walk function (teleport close enough, no tween)
+local function walkToInstant(part)
+    local goalCFrame = part.CFrame + Vector3.new(0, 0, -3)
+    hrp.CFrame = goalCFrame
+end
+
+local function activatePrompt(prompt)
+    walkToInstant(prompt.Parent)
+    task.wait(0.2)
+
+    if prompt:FindFirstChild("PromptButtonHoldBegan") then
+        prompt.PromptButtonHoldBegan:Fire()
+        task.wait(1.4) -- Fixed hold duration
+        prompt.PromptButtonHoldEnded:Fire()
+    else
+        if fireproximityprompt then
+            fireproximityprompt(prompt)
+        else
+            warn("Can't trigger prompt!")
+        end
+    end
+end
+
+-- Toggle button click event
+ToggleButton.MouseButton1Click:Connect(function()
+    running = not running
+    if running then
+        ToggleButton.Text = "Auto Farm: ON"
+        -- Start the loop
+        spawn(function()
+            while running do
+                repeat task.wait(0.4) until pickupPrompt.Enabled and running
+                if not running then break end
+
+                activatePrompt(pickupPrompt)
+                if not running then break end
+
+                activatePrompt(dropPrompt)
+                if not running then break end
+
+                task.wait(0.8)
+            end
+        end)
+    else
+        ToggleButton.Text = "Auto Farm: OFF"
+    end
+end)
+end)
+
+addMainMenuButton("AIMBOT ON / OFF  [3KTG]", function()
+	--// CONFIG
+getgenv().Environment = {
+    FOVSettings = {
+        Amount = 150,
+        Visible = true,
+        Color = Color3.fromRGB(255, 255, 255) -- White FOV
+    },
+    Aimbot = {
+        Enabled = true,
+        AimPart = "Head"
+    }
+}
+
+--// SERVICES
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+--// CREATE FOV CIRCLE
+local Circle = Drawing.new("Circle")
+Circle.Radius = Environment.FOVSettings.Amount
+Circle.Thickness = 2
+Circle.Transparency = 1
+Circle.Filled = false
+Circle.Color = Environment.FOVSettings.Color
+
+--// UPDATE FOV CIRCLE POSITION
+RunService.RenderStepped:Connect(function()
+    Circle.Position = UIS:GetMouseLocation()
+    Circle.Visible = Environment.FOVSettings.Visible
+    Circle.Radius = Environment.FOVSettings.Amount
+end)
+
+--// AIMBOT FUNCTION
+local function GetClosestPlayer()
+    local closest, dist = nil, Environment.FOVSettings.Amount
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild(Environment.Aimbot.AimPart) then
+            local headPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(player.Character[Environment.Aimbot.AimPart].Position)
+            if onScreen then
+                local mag = (Vector2.new(headPos.X, headPos.Y) - UIS:GetMouseLocation()).Magnitude
+                if mag < dist then
+                    closest = player
+                    dist = mag
+                end
+            end
+        end
+    end
+    return closest
+end
+
+RunService.RenderStepped:Connect(function()
+    if Environment.Aimbot.Enabled and UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+        local target = GetClosestPlayer()
+        if target then
+            workspace.CurrentCamera.CFrame = CFrame.new(
+                workspace.CurrentCamera.CFrame.Position,
+                target.Character[Environment.Aimbot.AimPart].Position
+            )
+        end
+    end
+end)
+
+--// GUI SETUP
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local SliderBack = Instance.new("Frame")
+local SliderFill = Instance.new("Frame")
+local SliderButton = Instance.new("TextButton")
+local FOVLabel = Instance.new("TextLabel")
+local FOVToggleButton = Instance.new("TextButton")  -- FOV visibility toggle button
+local AimbotToggleButton = Instance.new("TextButton")  -- Aimbot ON/OFF toggle button
+
+ScreenGui.Parent = game.CoreGui
+
+-- Frame
+Frame.Size = UDim2.new(0, 220, 0, 180)  -- Adjusted size to accommodate two buttons
+Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- All black
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+-- Title
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "TAONG GOMA AIMBOT" -- Custom Title
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.SourceSansBold
+Title.Parent = Frame
+
+-- Slider background
+SliderBack.Size = UDim2.new(0.8, 0, 0, 6)
+SliderBack.Position = UDim2.new(0.1, 0, 0.35, 0)
+SliderBack.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- All black
+SliderBack.BorderSizePixel = 0
+SliderBack.Parent = Frame
+
+-- Slider fill
+SliderFill.Size = UDim2.new(0.5, 0, 1, 0)
+SliderFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White fill
+SliderFill.BorderSizePixel = 0
+SliderFill.Parent = SliderBack
+
+-- Slider button
+SliderButton.Size = UDim2.new(0, 20, 0, 20)
+SliderButton.Position = UDim2.new(0.5, -10, 0.5, -10)
+SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White button
+SliderButton.Text = ""
+SliderButton.BorderSizePixel = 0
+SliderButton.Parent = Frame
+
+-- FOV text display
+FOVLabel.Size = UDim2.new(1, 0, 0, 20)
+FOVLabel.Position = UDim2.new(0, 0, 0.45, 0)
+FOVLabel.BackgroundTransparency = 1
+FOVLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVLabel.TextSize = 14
+FOVLabel.Font = Enum.Font.SourceSans
+FOVLabel.Text = "FOV: " .. Environment.FOVSettings.Amount
+FOVLabel.Parent = Frame
+
+-- FOV Visibility Toggle button (top)
+FOVToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+FOVToggleButton.Position = UDim2.new(0.1, 0, 0.7, 0)
+FOVToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+FOVToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVToggleButton.TextSize = 14
+FOVToggleButton.Font = Enum.Font.SourceSansBold
+FOVToggleButton.Text = "FOV: Visible"
+FOVToggleButton.Parent = Frame
+
+-- Aimbot ON/OFF Toggle button (bottom)
+AimbotToggleButton.Size = UDim2.new(0.8, 0, 0, 30)
+AimbotToggleButton.Position = UDim2.new(0.1, 0, 0.85, 0)
+AimbotToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+AimbotToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotToggleButton.TextSize = 14
+AimbotToggleButton.Font = Enum.Font.SourceSansBold
+AimbotToggleButton.Text = "Aimbot: On"
+AimbotToggleButton.Parent = Frame
+
+-- FOV slider logic
+local dragging = false
+
+local function updateFOV(percent)
+    percent = math.clamp(percent, 0, 1)
+    SliderFill.Size = UDim2.new(percent, 0, 1, 0)
+    SliderButton.Position = UDim2.new(percent, -10, 0.5, -10)
+    local newFOV = math.floor(50 + percent * 400)
+    Environment.FOVSettings.Amount = newFOV
+    FOVLabel.Text = "FOV: " .. newFOV
+end
+
+SliderButton.MouseButton1Down:Connect(function()
+    dragging = true
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local percent = (UIS:GetMouseLocation().X - SliderBack.AbsolutePosition.X) / SliderBack.AbsoluteSize.X
+        updateFOV(percent)
+    end
+end)
+
+-- Toggle FOV visibility
+FOVToggleButton.MouseButton1Click:Connect(function()
+    Environment.FOVSettings.Visible = not Environment.FOVSettings.Visible
+    if Environment.FOVSettings.Visible then
+        FOVToggleButton.Text = "FOV: Visible"
+        FOVToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        FOVToggleButton.Text = "FOV: Hidden"
+        FOVToggleButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    end
+end)
+
+-- Toggle Aimbot functionality (ON/OFF)
+AimbotToggleButton.MouseButton1Click:Connect(function()
+    if Environment.Aimbot.Enabled then
+        -- Turn Aimbot off
+        Environment.Aimbot.Enabled = false
+        AimbotToggleButton.Text = "Aimbot: Off"  -- Change text to Off
+        AimbotToggleButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)  -- Red background
+    else
+        -- Turn Aimbot on
+        Environment.Aimbot.Enabled = true
+        AimbotToggleButton.Text = "Aimbot: On"  -- Change text to On
+        AimbotToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)  -- Green background
+    end
+end)
+
+-- Initial setup for the slider
+updateFOV((Environment.FOVSettings.Amount - 50) / 400)
+end)
+
+--// Function to Add Buttons to Main Menu
+local function addMainMenuButton(text, callback)
+	local panel = tabPanels["DOMINION TELEPORT"]
+	if not panel then return end
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -20, 0, 36)
+	button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.Font = Enum.Font.GothamSemibold
+	button.TextSize = 14
+	button.Text = text
+	button.AutoButtonColor = false
+	button.Parent = panel
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("HP [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-1285.816162109375, 2.7281417846679688, -1737.093994140625)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("CLOTHING [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-670.8401489257812, 6.163100242614746, -1437.7149658203125)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("GUN SHOP [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-407.4294128417969, 4.161787033081055, -645.768310546875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("CAR DEALER [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-237.59339904785156, 5.096484661102295, -597.2655029296875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("JOB [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(114.08740997314453, 5.647642135620117, -293.3097839355469)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("PHARMACY [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-888.1544799804688, 1.4847240447998047, -2064.15966796875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("SPAWN CAR [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-456.9869384765625, 4.547006607055664, -655.15087890625)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("TRAPHOUSE ENTRANCE [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-373.43365478515625, 45.74742126464844, 1702.6312255859375)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("TRAPHOUSE WAITING [3KTG]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(-348.4434814453125, 43.28300857543945, 1896.1903076171875)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("UNKNOWN [3KTG]", function()
+	
 end)
 
 -- Particle Snow Effect inside main GUI
