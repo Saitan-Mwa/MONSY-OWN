@@ -416,6 +416,7 @@ local tabNames = {
 	"ROLEPLAY SCRIPT", 
 	"BRING ALL CMDZ", 
 	"BUY GUN CMD", 
+	"LAS PINAS",
 	"SCANNER", 
 	"ALADIA", 
 	"TROLL", 
@@ -3745,6 +3746,109 @@ UIS.InputBegan:Connect(function(input, gpe)
         gui.Enabled = not gui.Enabled
     end
 end)
+end)
+
+--// Function to Add Buttons to Main Menu
+local function addMainMenuButton(text, callback)
+	local panel = tabPanels["LAS PINAS"]
+	if not panel then return end
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -20, 0, 36)
+	button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.Font = Enum.Font.GothamSemibold
+	button.TextSize = 14
+	button.Text = text
+	button.AutoButtonColor = false
+	button.Parent = panel
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Silenced Pistol [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Silenced Pistol", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Heavy Vest [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Heavy Vest", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Glock-19 [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Glock-19", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Oxy [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Oxy", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Vector [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Vector", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("Tail [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("Tail", -100000)
+end)
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("AmmoBox [3KTG]", function()
+	local args = {
+    [1] = "Silenced Pistol",
+    [2] = -1000000
+}
+
+game:GetService("ReplicatedStorage").ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer("AmmoBox", -100000)
 end)
 
 --// Function to Add Buttons to Main Menu
