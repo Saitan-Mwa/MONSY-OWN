@@ -3618,7 +3618,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-title.Text = "Bagong Baryo City"
+title.Text = "BAGONG BARYO ROLEPLAY"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
@@ -3734,6 +3734,168 @@ toggle.MouseButton1Click:Connect(function()
     while giving do
         if selectedGun and tonumber(amountBox.Text) then
             ReplicatedStorage.BuyItemRemote:FireServer(selectedGun, tonumber(amountBox.Text))
+        end
+        task.wait(0.001)
+    end
+end)
+
+-- RightShift to toggle GUI
+UIS.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
+        gui.Enabled = not gui.Enabled
+    end
+end)
+end)
+
+--// 4 Buttons in Roleplay Script
+addMainMenuButton("LAS PINAS ROLEPLAY [3KTG]", function()
+	--// Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+
+--// GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "GiveAllCashGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 400)
+frame.Position = UDim2.new(0.5, -150, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 1
+frame.BorderColor3 = Color3.fromRGB(40, 40, 40)
+frame.Parent = gui
+frame.Active = true
+frame.Draggable = true
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.Text = "LAS PINAS ROLEPLAY"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.Parent = frame
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
+
+-- Dropdown (Select Gun)
+local dropdown = Instance.new("TextButton")
+dropdown.Size = UDim2.new(1, -20, 0, 30)
+dropdown.Position = UDim2.new(0, 10, 0, 50)
+dropdown.Text = "Select Gun"
+dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+dropdown.TextColor3 = Color3.new(1, 1, 1)
+dropdown.Font = Enum.Font.Gotham
+dropdown.TextSize = 14
+dropdown.Parent = frame
+Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 6)
+
+local gunList = {"Silenced Pistol", "Heavy Vest", "Glock-19", "Oxy", "Vector", "Tail", "AmmoBox"}
+
+local selectedGun = nil
+
+-- Dropdown Menu
+local dropdownFrame = Instance.new("Frame")
+dropdownFrame.Size = UDim2.new(1, -20, 0, #gunList * 25)
+dropdownFrame.Position = UDim2.new(0, 10, 0, 85)
+dropdownFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+dropdownFrame.Visible = false
+dropdownFrame.Parent = frame
+Instance.new("UICorner", dropdownFrame).CornerRadius = UDim.new(0, 5)
+
+for i, gun in ipairs(gunList) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 25)
+    btn.Position = UDim2.new(0, 0, 0, (i - 1) * 25)
+    btn.Text = gun
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 12
+    btn.Parent = dropdownFrame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+
+    btn.MouseButton1Click:Connect(function()
+        selectedGun = gun
+        dropdown.Text = gun
+        dropdownFrame.Visible = false
+    end)
+end
+
+dropdown.MouseButton1Click:Connect(function()
+    dropdownFrame.Visible = not dropdownFrame.Visible
+end)
+
+-- Preset Buttons (Aligned)
+local buttonSpacing = 5
+local buttonWidth = (300 - 40 - (buttonSpacing * 2)) / 3
+local buttonYOffset = 95 + #gunList * 25
+
+local amountBox = Instance.new("TextBox") -- forward declare here so buttons can use it
+
+for i, data in ipairs({
+    {Label = "Give 100K", Value = -100000},
+    {Label = "Give 1M", Value = -1000000},
+    {Label = "Give 10M", Value = -10000000},
+}) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, buttonWidth, 0, 30)
+    btn.Position = UDim2.new(0, 10 + (buttonWidth + buttonSpacing) * (i - 1), 0, buttonYOffset)
+    btn.Text = data.Label
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 12
+    btn.Parent = frame
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+
+    btn.MouseButton1Click:Connect(function()
+        amountBox.Text = tostring(data.Value)
+    end)
+end
+
+-- Amount Box
+amountBox.Size = UDim2.new(1, -20, 0, 30)
+amountBox.Position = UDim2.new(0, 10, 0, buttonYOffset + 40)
+amountBox.PlaceholderText = "Enter Amount (TAONG GOMA CMD)"
+amountBox.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+amountBox.TextColor3 = Color3.new(1, 1, 1)
+amountBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+amountBox.Font = Enum.Font.Gotham
+amountBox.TextSize = 12
+amountBox.Parent = frame
+Instance.new("UICorner", amountBox).CornerRadius = UDim.new(0, 6)
+
+-- Auto Give Button
+local toggle = Instance.new("TextButton")
+toggle.Size = UDim2.new(1, -20, 0, 35)
+toggle.Position = UDim2.new(0, 10, 0, buttonYOffset + 80)
+toggle.Text = "Start Auto Give"
+toggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.Font = Enum.Font.GothamBold
+toggle.TextSize = 14
+toggle.Parent = frame
+Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
+
+-- Auto Give Logic
+local giving = false
+
+toggle.MouseButton1Click:Connect(function()
+    giving = not giving
+    toggle.Text = giving and "Stop Auto Give" or "Start Auto Give"
+    while giving do
+        if selectedGun and tonumber(amountBox.Text) then
+            ReplicatedStorage..ShopRemotes["BuyItem_cdbe4ff6-1e0e-4d41-b441-7d1ba5092d5a"]:FireServer(selectedGun, tonumber(amountBox.Text))
         end
         task.wait(0.001)
     end
