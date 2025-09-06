@@ -7032,6 +7032,30 @@ end
 teleportToTarget()
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("CLOTHING [LAS PINAS RP]", function()
+	-- LocalScript (Client-Side)
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Define the target position
+local targetPosition = Vector3.new(2862.9990234375, -322.5281982421875, -1066.845703125)
+
+-- Function to teleport the player immediately
+local function teleportToTarget()
+    -- Check if HumanoidRootPart exists and teleport immediately
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character:SetPrimaryPartCFrame(CFrame.new(targetPosition))  -- Teleport to target position
+    else
+        print("Error: HumanoidRootPart missing.")
+    end
+end
+
+-- Teleport as soon as the character is fully loaded
+teleportToTarget()
+end)
+
 -- Particle Snow Effect inside main GUI
 local function createSnowParticle()
     local particle = Instance.new("ImageLabel")
