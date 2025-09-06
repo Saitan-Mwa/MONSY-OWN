@@ -6715,7 +6715,7 @@ updateFOV((Environment.FOVSettings.Amount - 50) / 400)
 end)
 
 --// 8 Buttons in Main Menu
-addMainMenuButton("PRESS Q TO FREECAM AND Q AGAIN TO TP [LAS PINAS RP]", function()
+addMainMenuButton("PRESS Q TO FREECAM AND Q AGAIN TO TP [3KTG]", function()
 	-- Services
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -6725,9 +6725,9 @@ local player = Players.LocalPlayer
 local cam = workspace.CurrentCamera
 
 -- Settings
-local MOVE_SPEED = 60
+local MOVE_SPEED = 85
 local SPRINT_MULTIPLIER = 2
-local MOUSE_SENSITIVITY = 0.15
+local MOUSE_SENSITIVITY = 0.25
 local MAX_PITCH = 89
 
 -- State
