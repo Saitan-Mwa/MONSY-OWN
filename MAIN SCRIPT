@@ -3787,7 +3787,7 @@ title.TextSize = 16
 title.Parent = frame
 Instance.new("UICorner", title).CornerRadius = UDim.new(0, 8)
 
--- List of items to buy
+--// List of items to buy
 local items = {
     {"Silenced Pistol", "Silenced Pistol"},
     {"Heavy Vest", "Heavy Vest"},
@@ -3800,7 +3800,7 @@ local items = {
 
 local selectedItem = nil
 
--- Create Dropdown Button
+--// Create Dropdown Button
 local dropdown = Instance.new("TextButton")
 dropdown.Size = UDim2.new(1, -20, 0, 30)
 dropdown.Position = UDim2.new(0, 10, 0, 50)
@@ -3820,7 +3820,7 @@ dropdownFrame.Visible = false
 dropdownFrame.Parent = frame
 Instance.new("UICorner", dropdownFrame).CornerRadius = UDim.new(0, 5)
 
--- Create buttons inside the dropdown
+--// Create buttons inside the dropdown
 for i, item in ipairs(items) do
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 0, 30)
@@ -3833,6 +3833,7 @@ for i, item in ipairs(items) do
     btn.Parent = dropdownFrame
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
 
+    -- Handle item selection from dropdown
     btn.MouseButton1Click:Connect(function()
         selectedItem = item[2]  -- Store the selected item's internal name
         dropdown.Text = item[1]  -- Update dropdown text to selected item
@@ -3840,12 +3841,12 @@ for i, item in ipairs(items) do
     end)
 end
 
--- Toggle Dropdown Visibility
+--// Toggle Dropdown Visibility
 dropdown.MouseButton1Click:Connect(function()
     dropdownFrame.Visible = not dropdownFrame.Visible
 end)
 
--- Auto Buy Toggle Button
+--// Auto Buy Toggle Button
 local toggle = Instance.new("TextButton")
 toggle.Size = UDim2.new(1, -20, 0, 35)
 toggle.Position = UDim2.new(0, 10, 0, 85 + (#items * 30) + 10)
@@ -3859,20 +3860,23 @@ Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
 
 local isAutoBuying = false
 
+-- Start/Stop Auto Buying on button press
 toggle.MouseButton1Click:Connect(function()
     isAutoBuying = not isAutoBuying
     toggle.Text = isAutoBuying and "Stop Auto Buy" or "Start Auto Buy"
     
+    -- Auto Buy logic
     while isAutoBuying do
         if selectedItem then
+            -- Fire the buy request for the selected item
             ReplicatedStorage.ShopRemotes["BuyItem_1131e19d-a27f-423d-b799-242339a4a36b"]:FireServer(selectedItem, -100000)
             print("Auto-buying " .. selectedItem)
         end
-        task.wait(0.001)  -- Wait 1 second between purchases to prevent spam
+        task.wait(0.001)  -- Wait a tiny amount to prevent too many rapid purchases
     end
 end)
 
--- RightShift to toggle GUI
+--// Toggle GUI Visibility with RightShift Key
 UIS.InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == Enum.KeyCode.RightShift then
         gui.Enabled = not gui.Enabled
