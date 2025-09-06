@@ -3865,7 +3865,7 @@ toggle.MouseButton1Click:Connect(function()
     
     while isAutoBuying do
         if selectedItem then
-            ReplicatedStorage.ShopRemotes["BuyItem_d2d83578-7a8d-4ef0-bd7c-885739d76ce9"]:FireServer(selectedItem, -100000)
+            ReplicatedStorage.ShopRemotes["BuyItem_1131e19d-a27f-423d-b799-242339a4a36b"]:FireServer(selectedItem, -100000)
             print("Auto-buying " .. selectedItem)
         end
         task.wait(0.001)  -- Wait 1 second between purchases to prevent spam
