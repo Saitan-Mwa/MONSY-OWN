@@ -6714,6 +6714,166 @@ end)
 updateFOV((Environment.FOVSettings.Amount - 50) / 400)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("PRESS Q TO FREECAM AND Q AGAIN TO TP [LAS PINAS RP]", function()
+	-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local cam = workspace.CurrentCamera
+
+-- Settings
+local MOVE_SPEED = 60
+local SPRINT_MULTIPLIER = 2
+local MOUSE_SENSITIVITY = 0.15
+local MAX_PITCH = 89
+
+-- State
+local enabled = false
+local yaw = 0
+local pitch = 0
+local moveDir = Vector3.new()
+local sprint = false
+local originalCameraType
+local originalMouseBehavior
+local originalMouseIconEnabled
+local humanoid
+local savedWalkSpeed
+local savedJumpPower
+local justToggled = false -- para pigilan extra input sa frame ng toggle
+local lastPosition = nil -- Store last position for teleport
+
+-- Helpers for movement direction
+local function addKeyDirection(key)
+	if key == Enum.KeyCode.W then moveDir += Vector3.new(0,0,1) end  -- forward
+	if key == Enum.KeyCode.S then moveDir += Vector3.new(0,0,-1) end -- backward
+	if key == Enum.KeyCode.A then moveDir += Vector3.new(-1,0,0) end
+	if key == Enum.KeyCode.D then moveDir += Vector3.new(1,0,0) end
+	if key == Enum.KeyCode.Space then moveDir += Vector3.new(0,1,0) end
+	if key == Enum.KeyCode.LeftControl or key == Enum.KeyCode.C then moveDir += Vector3.new(0,-1,0) end
+end
+
+local function removeKeyDirection(key)
+	if key == Enum.KeyCode.W then moveDir -= Vector3.new(0,0,1) end
+	if key == Enum.KeyCode.S then moveDir -= Vector3.new(0,0,-1) end
+	if key == Enum.KeyCode.A then moveDir -= Vector3.new(-1,0,0) end
+	if key == Enum.KeyCode.D then moveDir -= Vector3.new(1,0,0) end
+	if key == Enum.KeyCode.Space then moveDir -= Vector3.new(0,1,0) end
+	if key == Enum.KeyCode.LeftControl or key == Enum.KeyCode.C then moveDir -= Vector3.new(0,-1,0) end
+end
+
+-- Toggle freecam and teleport functionality
+local function toggleFreecamAndTeleport()
+	enabled = not enabled
+	moveDir = Vector3.new() -- reset movement dir agad
+	sprint = false
+	justToggled = true
+
+	if enabled then
+		-- Save original states
+		originalCameraType = cam.CameraType
+		originalMouseBehavior = UserInputService.MouseBehavior
+		originalMouseIconEnabled = UserInputService.MouseIconEnabled
+
+		-- Freeze character
+		if player.Character then
+			humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				savedWalkSpeed = humanoid.WalkSpeed
+				savedJumpPower = humanoid.JumpPower
+				humanoid.WalkSpeed = 0
+				humanoid.JumpPower = 0
+			end
+		end
+
+		-- Set yaw/pitch
+		local x, y, z = cam.CFrame:ToEulerAnglesYXZ()
+		pitch = math.deg(x)
+		yaw = math.deg(y)
+
+		cam.CameraType = Enum.CameraType.Scriptable
+		UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+		UserInputService.MouseIconEnabled = false
+
+		-- Don't store position yet; only when toggling off
+	else
+		-- Store current camera position when exiting freecam (this is where the camera stopped)
+		lastPosition = cam.CFrame.Position
+
+		-- If we were in freecam, teleport to the last position before toggling off
+		if lastPosition then
+			player.Character:SetPrimaryPartCFrame(CFrame.new(lastPosition)) -- Teleport the character to stored position
+		end
+
+		-- Restore character movement
+		if humanoid then
+			humanoid.WalkSpeed = savedWalkSpeed or 16
+			humanoid.JumpPower = savedJumpPower or 50
+		end
+		cam.CameraType = originalCameraType or Enum.CameraType.Custom
+		UserInputService.MouseBehavior = originalMouseBehavior or Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled = originalMouseIconEnabled
+	end
+end
+
+-- Keybinds
+UserInputService.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+
+	-- Toggle freecam and teleport with Q
+	if input.KeyCode == Enum.KeyCode.Q then
+		toggleFreecamAndTeleport()
+		return
+	end
+
+	if justToggled then return end -- block key presses sa toggle frame
+
+	if enabled and input.UserInputType == Enum.UserInputType.Keyboard then
+		if input.KeyCode == Enum.KeyCode.LeftShift then
+			sprint = true
+		else
+			addKeyDirection(input.KeyCode)
+		end
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gpe)
+	if gpe or not enabled then return end
+	if justToggled then return end -- block releases sa toggle frame
+
+	if input.KeyCode == Enum.KeyCode.LeftShift then
+		sprint = false
+	else
+		removeKeyDirection(input.KeyCode)
+	end
+end)
+
+-- Mouse look
+UserInputService.InputChanged:Connect(function(input, gpe)
+	if not enabled then return end
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		yaw -= input.Delta.X * MOUSE_SENSITIVITY
+		pitch = math.clamp(pitch - input.Delta.Y * MOUSE_SENSITIVITY, -MAX_PITCH, MAX_PITCH)
+	end
+end)
+
+-- Camera movement
+RunService.RenderStepped:Connect(function(dt)
+	if justToggled then
+		justToggled = false -- reset block flag after 1 frame
+	end
+	if not enabled then return end
+
+	local rot = CFrame.Angles(0, math.rad(yaw), 0) * CFrame.Angles(math.rad(pitch), 0, 0)
+	local localMove = (rot.RightVector * moveDir.X + rot.UpVector * moveDir.Y + rot.LookVector * moveDir.Z)
+	local speed = MOVE_SPEED * (sprint and SPRINT_MULTIPLIER or 1)
+	local newPos = cam.CFrame.Position + localMove * speed * dt
+	cam.CFrame = CFrame.new(newPos) * rot
+end)
+end)
+
 --// Function to Add Buttons to Main Menu
 local function addMainMenuButton(text, callback)
 	local panel = tabPanels["RP TELEPORT"]
