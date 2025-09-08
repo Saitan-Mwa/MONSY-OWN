@@ -6876,6 +6876,11 @@ RunService.RenderStepped:Connect(function(dt)
 end)
 end)
 
+--// 8 Buttons in Main Menu
+addMainMenuButton("ALADIA PVP KILL FX CREDITS TO 777x [3KTG]", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Saitan-Mwa/SKID/refs/heads/main/ALADIA"))()
+end)
+
 --// Function to Add Buttons to Main Menu
 local function addMainMenuButton(text, callback)
 	local panel = tabPanels["RP TELEPORT"]
