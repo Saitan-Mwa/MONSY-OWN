@@ -422,6 +422,7 @@ local tabNames = {
 	"FANTASMA", 
     "VERSION 6",
 	"LAST VERSION",
+	"FOR LOCCO",
 	"RP TELEPORT" 
 }
 local tabPanels = {}
@@ -6879,6 +6880,323 @@ end)
 --// 8 Buttons in Main Menu
 addMainMenuButton("ALADIA PVP KILL FX CREDITS TO 777x [3KTG]", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/Saitan-Mwa/SKID/refs/heads/main/ALADIA"))()
+end)
+
+--// Function to Add Buttons to Main Menu
+local function addMainMenuButton(text, callback)
+	local panel = tabPanels["FOR LOCCO"]
+	if not panel then return end
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, -20, 0, 36)
+	button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	button.TextColor3 = Color3.new(1, 1, 1)
+	button.Font = Enum.Font.GothamSemibold
+	button.TextSize = 14
+	button.Text = text
+	button.AutoButtonColor = false
+	button.Parent = panel
+	Instance.new("UICorner", button).CornerRadius = UDim.new(0, 6)
+
+	button.MouseEnter:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+	button.MouseLeave:Connect(function()
+		TweenService:Create(button, TweenInfo.new(0.2), {
+			BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		}):Play()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		callback()
+	end)
+end
+
+--// 8 Buttons in Main Menu
+addMainMenuButton("HP [DOMINION]", function()
+	--// SUPER REALISM CYCLE MODE (Day, Sunset, Night, Rainy Night with rain particles)
+
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+-- GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Button = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local BtnCorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+
+ScreenGui.Name = "SuperRealismUI"
+ScreenGui.Parent = game.CoreGui
+
+Frame.Size = UDim2.new(0, 240, 0, 120)
+Frame.Position = UDim2.new(0.4, 0, 0.3, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BackgroundTransparency = 0.2
+Frame.Active = true
+Frame.Draggable = true
+Frame.Parent = ScreenGui
+
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = Frame
+
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "SUPER REALISM"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.Parent = Frame
+
+Button.Size = UDim2.new(1, -40, 0, 40)
+Button.Position = UDim2.new(0, 20, 0, 60)
+Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+Button.Font = Enum.Font.GothamBold
+Button.TextSize = 18
+Button.Text = "ENABLE SUPER REALISM"
+Button.Parent = Frame
+
+BtnCorner.CornerRadius = UDim.new(0, 6)
+BtnCorner.Parent = Button
+
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.fromRGB(255, 255, 255)
+UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+UIStroke.Parent = Button
+
+-- Modes
+local modes = {
+	"DAY",
+	"SUNSET",
+	"NIGHT",
+	"RAINY_NIGHT",
+	"DISABLED"
+}
+local currentMode = 0
+
+-- Rain particle instance (created once)
+local rainParticle
+local rainEmitterParent
+
+local function createRain()
+	-- Remove existing rain if any
+	if rainEmitterParent and rainEmitterParent.Parent then
+		rainEmitterParent:Destroy()
+	end
+
+	-- Create a transparent, large part above the player to emit rain
+	rainEmitterParent = Instance.new("Part")
+	rainEmitterParent.Name = "RainEmitterPart"
+	rainEmitterParent.Anchored = true
+	rainEmitterParent.CanCollide = false
+	rainEmitterParent.Transparency = 1
+	rainEmitterParent.Size = Vector3.new(1000, 1, 1000)
+
+	-- Position above player camera
+	local player = Players.LocalPlayer
+	local character = player.Character
+	local hrp = character and character:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		rainEmitterParent.CFrame = CFrame.new(hrp.Position + Vector3.new(0, 50, 0))
+	else
+		-- fallback to camera position
+		local camera = workspace.CurrentCamera
+		rainEmitterParent.CFrame = camera.CFrame * CFrame.new(0, 50, 0)
+	end
+
+	rainEmitterParent.Parent = workspace
+
+	-- Create particle emitter
+	rainParticle = Instance.new("ParticleEmitter")
+	rainParticle.Name = "RainParticles"
+	rainParticle.Parent = rainEmitterParent
+
+	-- Particle properties
+	rainParticle.Texture = "rbxassetid://258128463"  -- raindrop texture
+	rainParticle.LightEmission = 0.7
+	rainParticle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(1, 0.15)})
+	rainParticle.Transparency = NumberSequence.new(0, 0.4)
+	rainParticle.Speed = NumberRange.new(50, 60)
+	rainParticle.Lifetime = NumberRange.new(1, 1.5)
+	rainParticle.Rate = 800
+	rainParticle.Rotation = NumberRange.new(-10, 10)
+	rainParticle.RotSpeed = NumberRange.new(-30, 30)
+	rainParticle.VelocitySpread = 15
+	rainParticle.Acceleration = Vector3.new(0, -100, 0)
+	rainParticle.EmissionDirection = Enum.NormalId.Bottom
+end
+
+local function stopRain()
+	if rainEmitterParent and rainEmitterParent.Parent then
+		rainEmitterParent:Destroy()
+		rainEmitterParent = nil
+		rainParticle = nil
+	end
+end
+
+-- Reset all effects
+local function resetVisuals()
+	stopRain()
+	for _, v in ipairs(Lighting:GetChildren()) do
+		if v:IsA("PostEffect") then
+			v:Destroy()
+		end
+	end
+
+	Lighting.Brightness = 2
+	Lighting.FogEnd = 100000
+	Lighting.ClockTime = 14
+	Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+	Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+	Lighting.Technology = Enum.Technology.Compatibility
+end
+
+-- Apply road materials (simplified for roads)
+local function setRoadMaterials()
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("Part") or obj:IsA("MeshPart") then
+			local name = obj.Name:lower()
+			if name:find("road") or name:find("asphalt") then
+				obj.Material = Enum.Material.SmoothPlastic
+				obj.Color = Color3.fromRGB(30, 30, 30)
+				obj.Reflectance = 0.15
+			end
+		end
+	end
+end
+
+-- Apply Effects
+local function applyBaseEffects()
+	local cc = Instance.new("ColorCorrectionEffect", Lighting)
+	cc.Contrast = 0.1
+	cc.Saturation = 0
+	cc.Brightness = 0
+
+	local sun = Instance.new("SunRaysEffect", Lighting)
+	sun.Intensity = 0.05
+	sun.Spread = 1
+
+	local bloom = Instance.new("BloomEffect", Lighting)
+	bloom.Intensity = 0.05
+	bloom.Threshold = 1
+	bloom.Size = 20
+
+	local depth = Instance.new("DepthOfFieldEffect", Lighting)
+	depth.FarIntensity = 0.1
+	depth.FocusDistance = 200
+	depth.InFocusRadius = 60
+	depth.NearIntensity = 0.05
+
+	local blur = Instance.new("BlurEffect", Lighting)
+	blur.Size = 1
+end
+
+-- MODE: DAY
+local function applyDayMode()
+	resetVisuals()
+	Lighting.Brightness = 2.2
+	Lighting.ClockTime = 15
+	Lighting.EnvironmentDiffuseScale = 0.6
+	Lighting.EnvironmentSpecularScale = 1
+	Lighting.GlobalShadows = true
+	Lighting.ShadowSoftness = 0.15
+	Lighting.FogStart = 150
+	Lighting.FogEnd = 1200
+	Lighting.FogColor = Color3.fromRGB(200, 200, 200)
+	Lighting.Ambient = Color3.fromRGB(140, 140, 140)
+	Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
+	Lighting.Technology = Enum.Technology.Future
+
+	setRoadMaterials()
+	applyBaseEffects()
+end
+
+-- MODE: SUNSET
+local function applySunsetMode()
+	resetVisuals()
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 18.3
+	Lighting.EnvironmentDiffuseScale = 0.4
+	Lighting.EnvironmentSpecularScale = 0.8
+	Lighting.FogStart = 100
+	Lighting.FogEnd = 900
+	Lighting.FogColor = Color3.fromRGB(255, 170, 100)
+	Lighting.Ambient = Color3.fromRGB(180, 120, 100)
+	Lighting.OutdoorAmbient = Color3.fromRGB(200, 120, 80)
+
+	setRoadMaterials()
+	applyBaseEffects()
+end
+
+-- MODE: NIGHT
+local function applyNightMode()
+	resetVisuals()
+	Lighting.Brightness = 1.2
+	Lighting.ClockTime = 22
+	Lighting.EnvironmentDiffuseScale = 0.1
+	Lighting.EnvironmentSpecularScale = 0.6
+	Lighting.FogStart = 100
+	Lighting.FogEnd = 700
+	Lighting.FogColor = Color3.fromRGB(50, 50, 70)
+	Lighting.Ambient = Color3.fromRGB(40, 40, 60)
+	Lighting.OutdoorAmbient = Color3.fromRGB(30, 30, 30)
+
+	setRoadMaterials()
+	applyBaseEffects()
+end
+
+-- MODE: RAINY NIGHT
+local function applyRainyNight()
+	resetVisuals()
+	Lighting.Brightness = 1
+	Lighting.ClockTime = 21.5
+	Lighting.EnvironmentDiffuseScale = 0.05
+	Lighting.EnvironmentSpecularScale = 0.9
+	Lighting.FogStart = 80
+	Lighting.FogEnd = 500
+	Lighting.FogColor = Color3.fromRGB(40, 40, 50)
+	Lighting.Ambient = Color3.fromRGB(25, 25, 30)
+	Lighting.OutdoorAmbient = Color3.fromRGB(20, 20, 25)
+
+	setRoadMaterials()
+	applyBaseEffects()
+
+	createRain()
+end
+
+-- BUTTON TOGGLE
+Button.MouseButton1Click:Connect(function()
+	currentMode += 1
+	if currentMode > #modes then
+		currentMode = 1
+	end
+
+	local selected = modes[currentMode]
+
+	if selected == "DAY" then
+		Button.Text = "SUNSET MODE"
+		applyDayMode()
+	elseif selected == "SUNSET" then
+		Button.Text = "NIGHT MODE"
+		applySunsetMode()
+	elseif selected == "NIGHT" then
+		Button.Text = "RAINY NIGHT MODE"
+		applyNightMode()
+	elseif selected == "RAINY_NIGHT" then
+		Button.Text = "DISABLE REALISM"
+		applyRainyNight()
+	elseif selected == "DISABLED" then
+		Button.Text = "ENABLE SUPER REALISM"
+		resetVisuals()
+	end
+end)
 end)
 
 --// Function to Add Buttons to Main Menu
