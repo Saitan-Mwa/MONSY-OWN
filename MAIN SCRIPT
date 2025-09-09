@@ -6916,7 +6916,7 @@ local function addMainMenuButton(text, callback)
 end
 
 --// 8 Buttons in Main Menu
-addMainMenuButton("HP [DOMINION]", function()
+addMainMenuButton("FOR LOCCO RESHADE [LOCCO]", function()
 	--// SUPER REALISM CYCLE MODE (Day, Sunset, Night, Rainy Night with rain particles)
 
 local Lighting = game:GetService("Lighting")
