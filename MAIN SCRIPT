@@ -6457,13 +6457,14 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
--- Wait for character and HRP
 repeat wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
 local trackingEnabled = false
 local lines = {}
 local nameTags = {}
 local renderConnection = nil
+local playerAddedConnection = nil
+local playerRemovingConnection = nil
 
 -- Create ESP (line + name tag) for player
 local function createESP(player)
@@ -6472,7 +6473,6 @@ local function createESP(player)
 
 	local origin = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 	local target = player.Character:FindFirstChild("HumanoidRootPart")
-
 	if not origin or not target then return end
 
 	-- Create white neon line
@@ -6492,8 +6492,8 @@ local function createESP(player)
 	if head then
 		local billboard = Instance.new("BillboardGui")
 		billboard.Name = "NameTag"
-		billboard.Size = UDim2.new(0, 100, 0, 30) -- ⬅️ smaller
-		billboard.StudsOffset = Vector3.new(0, 2.2, 0) -- ⬅️ slightly lower
+		billboard.Size = UDim2.new(0, 100, 0, 30)
+		billboard.StudsOffset = Vector3.new(0, 2.2, 0)
 		billboard.AlwaysOnTop = true
 		billboard.Adornee = head
 
@@ -6502,7 +6502,7 @@ local function createESP(player)
 		textLabel.BackgroundTransparency = 1
 		textLabel.Text = player.DisplayName .. "\n(" .. player.Name .. ")"
 		textLabel.TextColor3 = Color3.new(1, 1, 1)
-		textLabel.TextStrokeTransparency = 0.4 -- optional: 0 is bold white stroke, 1 is none
+		textLabel.TextStrokeTransparency = 0.4
 		textLabel.Font = Enum.Font.SourceSansBold
 		textLabel.TextScaled = true
 		textLabel.Parent = billboard
@@ -6512,66 +6512,117 @@ local function createESP(player)
 	end
 end
 
--- Update all lines
+-- Update ESP lines every frame
 local function updateESP()
+	local origin = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+	if not origin then return end
+
 	for player, line in pairs(lines) do
 		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			local origin = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 			local target = player.Character:FindFirstChild("HumanoidRootPart")
-			if origin and target then
-				local direction = target.Position - origin.Position
-				local distance = direction.Magnitude
-				line.Size = Vector3.new(0.1, 0.1, distance)
-				line.CFrame = CFrame.new(origin.Position, target.Position) * CFrame.new(0, 0, -distance / 2)
+			local direction = target.Position - origin.Position
+			local distance = direction.Magnitude
+			line.Size = Vector3.new(0.1, 0.1, distance)
+			line.CFrame = CFrame.new(origin.Position, target.Position) * CFrame.new(0, 0, -distance / 2)
+		end
+	end
+end
+
+-- Clear all ESP visuals and tables
+local function clearESP()
+	-- Destroy ESP lines from table
+	for _, line in pairs(lines) do
+		if line then line:Destroy() end
+	end
+
+	-- Destroy name tags from table
+	for _, tag in pairs(nameTags) do
+		if tag then tag:Destroy() end
+	end
+
+	lines = {}
+	nameTags = {}
+
+	-- Extra safety cleanup (stray ESP parts)
+	for _, obj in pairs(workspace:GetChildren()) do
+		if obj:IsA("Part") and obj.Name:match("^ESP_Line_") then
+			obj:Destroy()
+		end
+	end
+
+	-- Extra cleanup for stray name tags
+	for _, player in pairs(Players:GetPlayers()) do
+		if player.Character and player.Character:FindFirstChild("Head") then
+			local head = player.Character.Head
+			for _, gui in pairs(head:GetChildren()) do
+				if gui:IsA("BillboardGui") and gui.Name == "NameTag" then
+					gui:Destroy()
+				end
 			end
 		end
 	end
 end
 
--- Clear all ESP
-local function clearESP()
-	for _, line in pairs(lines) do
-		if line then line:Destroy() end
+-- Handle player leaving (cleanup ESP)
+local function onPlayerRemoving(player)
+	if lines[player] then
+		lines[player]:Destroy()
+		lines[player] = nil
 	end
-	for _, tag in pairs(nameTags) do
-		if tag then tag:Destroy() end
+	if nameTags[player] then
+		nameTags[player]:Destroy()
+		nameTags[player] = nil
 	end
-	lines = {}
-	nameTags = {}
 end
 
--- Toggle function
+-- Toggle ESP on/off
 local function toggleESP()
 	trackingEnabled = not trackingEnabled
 
 	if trackingEnabled then
 		warn("Tracking: ON")
 
-		-- Apply ESP to all current players
+		-- Create ESP for all current players
 		for _, player in ipairs(Players:GetPlayers()) do
 			createESP(player)
 		end
 
-		-- Update every frame
-		renderConnection = RunService.RenderStepped:Connect(function()
-			updateESP()
-		end)
+		-- Start updating lines
+		renderConnection = RunService.RenderStepped:Connect(updateESP)
 
-		-- Track new players
-		Players.PlayerAdded:Connect(function(player)
+		-- Listen for new players
+		playerAddedConnection = Players.PlayerAdded:Connect(function(player)
 			player.CharacterAdded:Connect(function()
 				wait(1)
-				createESP(player)
+				if trackingEnabled then
+					createESP(player)
+				end
 			end)
 		end)
+
+		-- Listen for players leaving
+		playerRemovingConnection = Players.PlayerRemoving:Connect(onPlayerRemoving)
+
 	else
 		warn("Tracking: OFF")
 
-		-- Stop updates and clear
+		-- Disconnect all events
 		if renderConnection then
 			renderConnection:Disconnect()
 			renderConnection = nil
 		end
+
+		if playerAddedConnection then
+			playerAddedConnection:Disconnect()
+			playerAddedConnection = nil
+		end
+
+		if playerRemovingConnection then
+			playerRemovingConnection:Disconnect()
+			playerRemovingConnection = nil
+		end
+
+		-- Clear visuals
 		clearESP()
 	end
 end
