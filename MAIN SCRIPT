@@ -3243,6 +3243,188 @@ toggleButton.MouseButton1Click:Connect(function()
 end)
 end)
 
+addMainMenuButton("NEW BRING ALL CMDZ [3KTG]", function()
+	local player = game.Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+-- === GUI SETUP === --
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
+screenGui.Name = "BringPartGUI"
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame")
+frame.Name = "Frame"
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Text = "TAONG GOMA CMD"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 16
+titleLabel.BackgroundTransparency = 1
+titleLabel.Size = UDim2.new(1, 0, 0, 20)
+titleLabel.Position = UDim2.new(0, 0, 0, 5)
+titleLabel.Parent = frame
+
+local textBox = Instance.new("TextBox")
+textBox.Name = "CommandBox"
+textBox.Text = ""
+textBox.PlaceholderText = "Enter Command"
+textBox.Font = Enum.Font.GothamBold
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.TextSize = 24
+textBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+textBox.BorderSizePixel = 0
+textBox.Size = UDim2.new(0.9, 0, 0, 40)
+textBox.Position = UDim2.new(0.05, 0, 0, 40)
+textBox.ClearTextOnFocus = false
+textBox.Parent = frame
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Text = "EXECUTE"
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextSize = 22
+toggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+toggleButton.BorderSizePixel = 0
+toggleButton.Size = UDim2.new(0.6, 0, 0, 35)
+toggleButton.Position = UDim2.new(0.2, 0, 0, 95)
+toggleButton.Parent = frame
+
+-- === CARRY LOGIC === --
+local CarryRemote = ReplicatedStorage:FindFirstChild("CarryReplic") 
+    and ReplicatedStorage.CarryReplic:FindFirstChild("CarryRemotes") 
+    and ReplicatedStorage.CarryReplic.CarryRemotes:FindFirstChild("CarryRemote")
+
+local CarryChoices = ReplicatedStorage:FindFirstChild("CarryReplic") 
+    and ReplicatedStorage.CarryReplic:FindFirstChild("CarryChoices")
+
+local carryType = CarryChoices and CarryChoices:FindFirstChild("Couple Hug")
+
+if not CarryRemote or not carryType then
+    warn("CarryRemote or carryType not found.")
+    return
+end
+
+local function fireCarry(target)
+    CarryRemote:FireServer({
+        cmd = "Carry",
+        firstPlr = target,
+        carrychoicesss = carryType
+    })
+end
+
+local function bringAll()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player then
+            fireCarry(plr)
+        end
+    end
+end
+
+local function bringRandom()
+    local allPlayers = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player then
+            table.insert(allPlayers, plr)
+        end
+    end
+
+    if #allPlayers > 0 then
+        local randomPlayer = allPlayers[math.random(1, #allPlayers)]
+        fireCarry(randomPlayer)
+    end
+end
+
+local function crashServer()
+    for i = 1, 50 do
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= player then
+                fireCarry(plr)
+            end
+        end
+        task.wait(0.05)
+    end
+end
+
+-- === HELPER: Split comma-separated usernames === --
+local function splitUsernames(input)
+    local names = {}
+    for name in string.gmatch(input, "([^,%s]+)") do
+        table.insert(names, name)
+    end
+    return names
+end
+
+-- === EXECUTE BUTTON FUNCTION === --
+toggleButton.MouseButton1Click:Connect(function()
+    local input = textBox.Text:lower()
+
+    if input == "bringall" then
+        bringAll()
+    elseif input == "bringrandom" then
+        bringRandom()
+    elseif input == "crash" then
+        crashServer()
+    else
+        local targetNames = splitUsernames(input)
+        local foundAny = false
+
+        for _, targetName in ipairs(targetNames) do
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= player and string.sub(plr.Name:lower(), 1, #targetName) == targetName then
+                    fireCarry(plr)
+                    foundAny = true
+                    break
+                end
+            end
+        end
+
+        if not foundAny then
+            warn("No matching players found for:", input)
+        end
+    end
+end)
+
+-- === AUTOCOMPLETE MULTIPLE NAMES ON ENTER (NO auto-carry) === --
+textBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local input = textBox.Text:lower()
+        local inputNames = {}
+        for name in string.gmatch(input, "([^,%s]+)") do
+            table.insert(inputNames, name)
+        end
+
+        local completedNames = {}
+
+        for _, inputName in ipairs(inputNames) do
+            local found = false
+            for _, plr in ipairs(Players:GetPlayers()) do
+                if plr ~= player and string.sub(plr.Name:lower(), 1, #inputName) == inputName then
+                    table.insert(completedNames, plr.Name)
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                -- If no match, keep the original input
+                table.insert(completedNames, inputName)
+            end
+        end
+
+        -- Update textbox with completed names
+        textBox.Text = table.concat(completedNames, ", ")
+    end
+end)
+end)
+
 --// Function to Add Buttons to Main Menu
 local function addMainMenuButton(text, callback)
 	local panel = tabPanels["BUY GUN CMD"]
