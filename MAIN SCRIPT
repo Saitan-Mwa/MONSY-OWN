@@ -4042,8 +4042,8 @@ Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
 
 local isAutoBuying = false
 
--- ✅ Updated RemoteEvent ID (this is what you asked to change)
-local buyRemote = ReplicatedStorage:WaitForChild("ShopRemotes"):WaitForChild("BuyItem_b5537429-a8a4-4eb2-91e7-6ec78c20f34d")
+-- ✅ Updated RemoteEvent to new system
+local buyRemote = ReplicatedStorage:WaitForChild("ShopRemotes"):WaitForChild("BuyItem_1cd2ed38-6a52-45f1-a520-e311d14a2ee3")
 
 toggle.MouseButton1Click:Connect(function()
     isAutoBuying = not isAutoBuying
